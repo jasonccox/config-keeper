@@ -20,11 +20,13 @@ exportFiles() {
 		copyFile "$line" "$tmpDir"
 	done
 
-	cd "$currentDir"
-
-	# TODO - make this have correct directory structure
-	tar -czvf "$destFile" "$srcBaseDir/$tmpDir"/*
+	cd $srcBaseDir/$tmpDir
+	echo "Compressing files in $srcBaseDir..."
+	tar -czvf "$destFile" *
+	echo "Config files exported to $destFile"
 	rm -rf "$srcBaseDir/$tmpDir"
+
+	cd "$currentDir"
 }
 
 copyFile() {
@@ -45,6 +47,14 @@ copyFile() {
 
 	cp "$currentDir/$path" .
 	cd "$currentDir"
+}
+
+getFullPath() {
+	if [[ "$1" == /* ]]; then
+		echo "$1"
+	else
+		echo $(pwd)/$1
+	fi
 }
 
 usage() {
@@ -89,13 +99,14 @@ outFile="$(pwd)/my-configs.tar.gz"
 while [ "$1" != "" ]; do
     case "$1" in
         -b | --base-dir )	shift
-                        	baseDir="$1"
+                        	baseDir="$(getFullPath $1)"
+
                             ;;
         -h | --help )       usage
                         	exit
                             ;;
         -o | --out-file )    shift
-                            outFile="$1"
+                            outFile="$(getFullPath $1)"
 							;;
         * )                 usage
                             exit 1
