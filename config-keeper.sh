@@ -2,14 +2,17 @@
 
 ### CONSTANTS
 NAME="config-keeper"
-LOG_FILE="log.txt"
 
 ### FUNCTIONS
 
+# Export files specified in the list file
+# $1 - the full path of the source base directory
+# $2 - the full path to the list file, which contains paths for the files to be exported, relative to the base directory and each on a new line
+# $3 - the full path of the .tar.gz file to be created
 exportFiles() {
 	local srcBaseDir="$1"
-	local destFile="$2"
-	local listFile="$3"
+	local listFile="$2"
+	local destFile="$3"
 	local tmpDir="ck-tmp"
 	local currentDir="$(pwd)"
 
@@ -29,6 +32,34 @@ exportFiles() {
 	cd "$currentDir"
 }
 
+# Import files from a .tar.gz file
+# $1 - the full path of the destination base directory
+# $2 - the full path of the .tar.gz file to be imported
+importFiles() {
+	local destBaseDir="$1"
+	local archive="$2"
+	local tmpDir="ck-tmp"
+	local currentDir="$(pwd)"
+	
+	cd "$destBaseDir"
+	mkdir "$tmpDir"
+	cd "$tmpDir"
+	tar -xzvf "$archive" > output
+	
+	IFS='\n' read -r -a lines <<< "$output"
+	
+	echo "Importing files..."
+	for line in "${lines[@]}"; do
+		echo "$line"
+		copyFile "$line" "$destBaseDir"
+	done
+	
+	cd "$currentDir"
+}
+
+# Copy a file from the current base directory to another base directory, preserving the file's path relative to the base directory
+# $1 - the path of the file to be copied, relative to the current directory
+# $2 - the full path of the base destination directory
 copyFile() {
 	local path="$1"
 	local dest="$2"
@@ -49,11 +80,13 @@ copyFile() {
 	cd "$currentDir"
 }
 
+# Get the full path for a file
+# $1 - the path to the file (either full or relative to the current directory)
 getFullPath() {
 	if [[ "$1" == /* ]]; then
 		echo "$1"
 	else
-		echo $(pwd)/$1
+		echo "$(pwd)/$1"
 	fi
 }
 
@@ -69,8 +102,8 @@ usage() {
         echo -e "       -o | --out-file         the file into which the export should be placed (export only)"
 }
 
+### MAIN
 
-# read in command line args
 if [[ "$1" == export ]]; then
         cmd=export
 elif [[ "$1" == import ]]; then
@@ -115,5 +148,7 @@ while [ "$1" != "" ]; do
 done
 
 if [[ "$cmd" == "export" ]]; then
-	exportFiles "$baseDir" "$outFile" "$file"
+	exportFiles "$baseDir" "$file" "$outFile"
+elif [[ "$cmd" == "import" ]]; then
+	importFiles "$baseDir" "$file" 
 fi
