@@ -40,13 +40,13 @@ importFiles() {
 	local archive="$2"
 	local tmpDir="ck-tmp"
 	local currentDir="$(pwd)"
-	
+
 	cd "$destBaseDir"
 	mkdir "$tmpDir"
 	cd "$tmpDir"
-	tar -xzvf "$archive" > output
+	output=$(tar -xzvf "$archive")
 	
-	IFS='\n' read -r -a lines <<< "$output"
+	IFS=$'\n' read -rd '' -a lines <<< "$output"
 	
 	echo "Importing files..."
 	for line in "${lines[@]}"; do
@@ -54,6 +54,9 @@ importFiles() {
 		copyFile "$line" "$destBaseDir"
 	done
 	
+	cd "$destBaseDir"
+	rm -rf "$tmpDir"
+
 	cd "$currentDir"
 }
 
@@ -76,7 +79,12 @@ copyFile() {
 		cd "$f"
 	done
 
-	cp "$currentDir/$path" .
+	options=""
+	if [ -d "$currentDir/$path" ]; then
+		options="-r"
+	fi
+
+	cp $options "$currentDir/$path" .
 	cd "$currentDir"
 }
 
@@ -92,7 +100,7 @@ getFullPath() {
 
 usage() {
         echo -e "$NAME: a tool for exporting and importing users' configuration files\n"
-        echo -e "Usage:\n  ./$NAME.sh [command] [file] [options]"
+        echo -e "Usage: ./$NAME.sh [command] [file] [options]"
         echo -e "    command - import or export"
         echo -e "    file - .tar.gz file containing exported config files (for import)"
         echo -e "           OR .txt file containing list of config files (for export)"
@@ -123,7 +131,7 @@ if [[ "$1" == "" ]]; then
         echo "'./$NAME.sh --help' for help" 
         exit 1
 else
-        file="$1"
+        file="$(getFullPath $1)"
 fi
 shift
 
