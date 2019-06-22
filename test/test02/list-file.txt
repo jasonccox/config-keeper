@@ -1,5 +1,7 @@
 file1.txt
 file2.txt
 dir1/
+
+# this is a comment
 dir2/file4.txt
 dir2/dir3/

@@ -20,7 +20,9 @@ exportFiles() {
 	cd "$srcBaseDir"
 	mkdir "$tmpDir"
 	for line in "${lines[@]}"; do
-		copyFile "$line" "$tmpDir"
+		if [[ "$line" != \#* ]] && [[ "$line" != "" ]]; then
+			copyFile "$line" "$tmpDir"
+		fi
 	done
 
 	cd $srcBaseDir/$tmpDir
