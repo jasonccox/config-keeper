@@ -42,21 +42,7 @@ importFiles() {
 	local currentDir="$(pwd)"
 
 	cd "$destBaseDir"
-	mkdir "$tmpDir"
-	cd "$tmpDir"
-	output=$(tar -xzvf "$archive")
-	
-	IFS=$'\n' read -rd '' -a lines <<< "$output"
-	
-	echo "Importing files..."
-	for line in "${lines[@]}"; do
-		echo "$line"
-		copyFile "$line" "$destBaseDir"
-	done
-	
-	cd "$destBaseDir"
-	rm -rf "$tmpDir"
-
+	tar -xzvf "$archive"
 	cd "$currentDir"
 }
 
