@@ -18,7 +18,12 @@ The basic command syntax is `./config-keeper.sh [command] [file] [options]`.
 
 ### Export
 
-The export operation allows you to specify a list of files or directories from within a base directory to compress in a .tar.gz file. Simply list the files/directories to be exported in a text file (separated by new lines and relative to the base directory).
+The export operation allows you to specify a list of files or directories from within a base directory to compress in a .tar.gz file. 
+
+#### List File
+The list file contains a list of the files/directories to be exported in a text file, each on a new line. The paths should be relative to the base directory. Blank lines will be ignored.  
+
+The list file supports comments. A comment is designated by a line beginning with a "#". Comments cannot be added on the same line as a file path.
 
 #### Example
 
@@ -98,3 +103,7 @@ The import operation allows you to import files from a .tar.gz file into a base 
     - dir3/
       - file4.txt
   - dir4/
+
+## Contributing
+
+Feel free to submit comments, issues, or pull requests to help make config-keeper better!
