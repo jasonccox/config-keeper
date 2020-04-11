@@ -1,5 +1,7 @@
 # config-keeper
 
+> Since creating this I've realized that it doesn't do anything `tar` can't easily do on it's own. I'll leave it up here, but you're probably better off just using `tar`.
+
 config-keeper is a free and open-source tool for exporting and importing users' configuration files. It allows you to export a list of files from within a base directory and import a tar file's contents into a base directory.
 
 ## Installation
